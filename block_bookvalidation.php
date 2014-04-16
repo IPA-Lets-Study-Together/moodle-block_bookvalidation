@@ -23,36 +23,57 @@
  */
 class block_bookvalidation extends block_base {
 	public function init() {
-		$this->title = get_string('bookvalidation', 'block_bookvalidation');
+		$this->title = get_string('pluginname', 'block_bookvalidation');
 	}
 
 	public function get_content(){
+
+		global $USER, $DB;
+
+		$userid = $USER->id;
+
 		if ($this->content !== null) {
 			return $this->content;
 		}
 
-		$this->content 	new stdClass;
+		//$this->content = new stdClass;
 
-		$cmid = required_param('cmid', PARAM_INT); //Book Course Module ID
-		$cm = get_coursemodule_from_id('book', $cmid, 0, false, MUST_EXIST);
-		$course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-		$book = $DB->get_record('book', array('id'=>$cm->instance), '*', MUST_EXIST);
+		$query = 'SELECT cu.fullname
+				FROM {course} cu
+				JOIN (
 
-		require_login($course, false, $cm);
+					SELECT u.id AS userid, u.firstname AS name, mrs.contextid, mrs.roleid, c.instanceid
+					FROM {user} u
+					JOIN {role_assignments} mrs ON mrs.userid = u.id
+					JOIN {context} c ON c.id = mrs.contextid
+					WHERE u.id = ?
+					AND (
+					mrs.roleid =3
+					OR mrs.roleid =4
+					OR mrs.roleid =1
+					) AND c.contextlevel =50
+				) AS part ON part.instanceid = cu.id';
 
-		try {
-			$data = $DB->get_records_sql('SELECT u.firstname FROM 
-				mdl_user u
-				JOIN mdl_role_assignments ra ON ra.userid=u.id
-				JOIN mdl_role r ON ra.roleid=r.id
-				JOIN mdl_context con ON ra.contextid=con.id
-				JOIN mdl_course c ON c.id=con.instanceid
-				WHERE r.shortname="student" AND c.id="2"');
+		$data = $DB->get_records_sql($query, array($userid));
 
-			var_dump($data);
-		} catch (Exception $e) {
-			echo "problems, problems";
-		}
+		var_dump($data);
+
+		// $cmid = required_param('cmid', PARAM_INT); //Book Course Module ID
+		// $cm = get_coursemodule_from_id('book', $cmid, 0, false, MUST_EXIST);
+		// $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+		// $book = $DB->get_record('book', array('id'=>$cm->instance), '*', MUST_EXIST);
+
+		// require_login($course, false, $cm);
+
+		// $data = $DB->get_records_sql('SELECT u.firstname FROM 
+		// 	mdl_user u
+		// 	JOIN mdl_role_assignments ra ON ra.userid=u.id
+		// 	JOIN mdl_role r ON ra.roleid=r.id
+		// 	JOIN mdl_context con ON ra.contextid=con.id
+		// 	JOIN mdl_course c ON c.id=con.instanceid
+		// 	WHERE r.shortname="student" AND c.id="2"');
+
+		// var_dump($data);
 	}
 
 	public function instance_allow_multiple() {
