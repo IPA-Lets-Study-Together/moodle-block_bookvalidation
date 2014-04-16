@@ -23,6 +23,6 @@
  */
 
 $string['pluginname'] = 'Book validation block';
-$string['bookvalidaton'] = 'Book validation';
+$string['bookvalidation'] = 'Book validation';
 $string['bookvalidation:addinstance'] = 'Add a new book validation block';
 $string['bookvalidation:myaddinstance'] = 'Add a new book validation block to the My Moodle page';
