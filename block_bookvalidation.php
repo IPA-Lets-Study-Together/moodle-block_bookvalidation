@@ -21,6 +21,10 @@
  * @copyright  2014 Ivana Skelic, Hrvoje Golcic 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die;
+
+
 class block_bookvalidation extends block_base {
 	public function init() {
 		$this->title = get_string('pluginname', 'block_bookvalidation');
@@ -28,18 +32,15 @@ class block_bookvalidation extends block_base {
 
 	public function get_content(){
 
-		global $COURSE;
+		global $COURSE, $DB, $USER, $OUTPUT, $PAGE;
 
 		if ($this->content !== null) {
 			return $this->content;
-		}
- 
-		// The other code.
+		}	
 		 
 		$url = new moodle_url('/blocks/bookvalidation/view.php', array('blockid' => $this->instance->id, 'courseid' => $COURSE->id));
-		$this->content->footer = html_writer::link($url, get_string('addpage', 'block_bookvalidation'));
-
-	}
+		$this->content->footer = html_writer::link($url, get_string('bookvalidation', 'block_bookvalidation'));
+}
 
 	public function instance_allow_multiple() {
 		return false;
